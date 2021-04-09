@@ -116,6 +116,8 @@ $\alpha NLI$，考虑一个因果关系A+B->C，给出两个B1 B2，选择合理
    包含了各种物品之间是否应该倾向于位置接近的关系（约5000条）
 9. ATOMIC
    大约30w个节点，每个节点是一个关于某个日常事件的desc，包含了他们之间的if-then关系
+10. OMCS
+      包含了许多描述常识的语句
 
 
 
@@ -145,4 +147,10 @@ $\alpha NLI$，考虑一个因果关系A+B->C，给出两个B1 B2，选择合理
 
 8. Social Commonsense Reasoning with Multi-Head Knowledge Attention
    考虑$\alpha NLI$和CIP（新）任务，分别将$[CLS] O_1 H_i[SEP]O_2[SEP]$和$[CLS]s_1s_2s_3[SEP]s_1s_2's_3[SEP]$作为输入。**MHKA**首先将输入文本送过LM，用SRL和COMET2.0抽取外部知识（也是一句话），送到另外一个Encoding layers中，输出的作为K和V，将前面LM的输出作为Q，再放进另一个Transformer中，输出的结果来做线性判断。
+   
+9. **KG-BART**: Knowledge Graph-Augmented BART for Generative Commonsense Reasoning
+   将KG注入BART来提高**常识语句生成**的性能。encoder：先将concept字面放入BART打散编码后，将编码结果用SCI模块池化重组成concept，和TransE拼接成node init，子图过一个multi-head的GAT，再用CSD模块打散成BART可以处理的结构。decoder：扩展一层子图，先在星状上gat，再在整个子图gat，encoder输出的结果分别与gat输出/encoder hidden state做attention，两个attn连一起，decoder输出文本。
+
+10. Language Generation with Multi-Hop Reasoning on Commonsense Knowledge Graph
+    **Generation** with Multi-Hop Reasoning Flow (**GRF**) ，通过graph上的多跳推理计算生成一个concept填补token的分布，并通过门控来选择是用text-gen还是concept。每次将context+已经和生成的token输入模型，由source concepts出发走H-hop的inter-connected path构建一个subgraph，过一个GNN，从source concept出发向周围如RL般计算score，增量R为graph嵌入与LM嵌入算分，所有score过softmax得到concept分布再过门控。
 
