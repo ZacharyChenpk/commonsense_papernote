@@ -61,6 +61,8 @@
 6. SWAG
    和ROCStories类似，有11.3w个故事短开头，四个可能的结尾选一个
 7. ReCoRD
+8. LSDSem 2017 Task
+   和ROCStories类似，从两个结局里选一个
 
 #### Psychological Reasoning
 
@@ -115,9 +117,11 @@ $\alpha NLI$，考虑一个因果关系A+B->C，给出两个B1 B2，选择合理
 8. LocateNear
    包含了各种物品之间是否应该倾向于位置接近的关系（约5000条）
 9. ATOMIC
-   大约30w个节点，每个节点是一个关于某个日常事件的desc，包含了他们之间的if-then关系
+   大约30w个节点，每个节点是一个关于某个日常event的desc，包含了他们之间的if-then关系（如理由、结果、执行者性格之类的），event是指代词（PersonX）+动词谓词短语，出现足够频繁的参数（如personX eat spaghetti的spaghetti）也会出现
 10. OMCS
       包含了许多描述常识的语句
+11. Event2Mind
+    类似ATOMIC，但是只有表示情感的dimension
 
 
 
@@ -153,4 +157,7 @@ $\alpha NLI$，考虑一个因果关系A+B->C，给出两个B1 B2，选择合理
 
 10. Language Generation with Multi-Hop Reasoning on Commonsense Knowledge Graph
     **Generation** with Multi-Hop Reasoning Flow (**GRF**) ，通过graph上的多跳推理计算生成一个concept填补token的分布，并通过门控来选择是用text-gen还是concept。每次将context+已经和生成的token输入模型，由source concepts出发走H-hop的inter-connected path构建一个subgraph，过一个GNN，从source concept出发向周围如RL般计算score，增量R为graph嵌入与LM嵌入算分，所有score过softmax得到concept分布再过门控。
+    
+11. **ATOMIC**: An Atlas of Machine Commonsense for If-Then Reasoning
+    提出了一个存储了event-dimension(if-then)-event的常识数据集atomic，不同的inference dimension是event之间的关系（如xIntent，oReact之类的）。任务是给一个event，预测它在9个dimension之后可能会连接哪些event。用GloVe+ELMo+bi-GRU编码input event str，用GRU解码。实验发现按照不同的hierarchy将相似的dimension（如Xintent和Xneed都算是求input event的执行者起因）的encoder参数共享可以提高效果。
 
