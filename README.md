@@ -27,7 +27,7 @@
    一个14m句子的科学相关语料作为常识集合，还有8000个四选一选择题，用常识集合来解题。
 5. SQuAD
 6. CommonsenseQA
-   9500个三选一，每个问题都需要从ConceptNet的三个concept中选一个出来
+   1.2W个五选一，每个问题都需要从ConceptNet的5个concept中选一个出来。构造方法：给一个问题concept，选和它有相同关系的三个邻居，构造三个问题分别以三个邻居为答案，每个问题再选择一个相同关系的distractor，人工写一个distractor，总共是5个。每个问题+答案通过搜索引擎搜100个snippet作为textual context，每个问题总共500个（最后发现没啥用）。
 
 #### Textual Entailment
 
@@ -59,9 +59,11 @@
 5. CLOTH
    10w道高考完型四选一，每个题目会高数你是语法题/短程推理/变形/长程推理中的哪一个
 6. SWAG
-   和ROCStories类似，有11.3w个故事短开头，四个可能的结尾选一个
-7. ReCoRD
-8. LSDSem 2017 Task
+   和ROCStories类似，有11.3w个故事短开头，四个可能的结尾选一个。使用对抗式训练模型生成，即指定一系列已有的模型，选定一部分negative后循环，每次从选定集里排除几个最容易被分辨的，从未选定集里选出几个最有迷惑性的交换（使用多折训练集分割来训练多个模型），这样可以减少数据中的human annotation bias。
+7. Hellaswag
+   和SWAG类似，也使用对抗式训练模型，但是用更强的BERT作为discriminator，用GPT作为generator
+8. ReCoRD
+9. LSDSem 2017 Task
    和ROCStories类似，从两个结局里选一个
 
 #### Psychological Reasoning
@@ -80,13 +82,13 @@
 2. Inference is Everything (IIE)
 3. GLUE
 4. DNC
-5. SemEval-2020 Task 4
+5. SemEval-2020 Task 4 （ComVE）
    分为三个任务：给定两句话，判断哪句是不合理的；从3个理由中选择前面那个不合理的理由；生成前面那个不合理的理由。
 
 #### Commonsense Generation
 
 1. CommonGen
-   包含有2.7w的concept，和约5w的句子作为prototype，需要模型自己进行prototype的检索。
+   包含有3.5w的concept-sets，和相应的7.7w句子，是从图片标题和视频标题中抽取出来的，每个concept-set包含3-5个concept。
 
 #### Abductive Natural Language Inference
 
@@ -160,4 +162,7 @@ $\alpha NLI$，考虑一个因果关系A+B->C，给出两个B1 B2，选择合理
     
 11. **ATOMIC**: An Atlas of Machine Commonsense for If-Then Reasoning
     提出了一个存储了event-dimension(if-then)-event的常识数据集atomic，不同的inference dimension是event之间的关系（如xIntent，oReact之类的）。任务是给一个event，预测它在9个dimension之后可能会连接哪些event。用GloVe+ELMo+bi-GRU编码input event str，用GRU解码。实验发现按照不同的hierarchy将相似的dimension（如Xintent和Xneed都算是求input event的执行者起因）的encoder参数共享可以提高效果。
+    
+12. **ECNU-SenseMaker** at SemEval-2020 Task 4: Leveraging Heterogeneous Knowledge Resources for Commonsense Validation and Explanation
+    使用引入知识的GAT来解决ComVE，选择不合理的选项并选择/生成不合理的理由。对于一句输入，找到其中所有ConceptNet中对应的concept，每个再根据在ConceptNet中的边权重选择几个重要的邻居，按模板生成描述插入原语句，如Sugar-IsA-sweetfood则对应原句Sugar (is a sweet food)，在新语句上使用soft-position和attention mask。给每个concept根据权重抽样构造子图（彼此可以通过公共邻居相连），中心concept取平均，与LM output相连后过个MLP计算本句的propability。使用双loss共享机制自动控制两个loss之间的平衡。
 
